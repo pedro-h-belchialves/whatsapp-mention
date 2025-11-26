@@ -7,7 +7,7 @@ const EVOLUTION_API_KEY = process.env.NEXT_PUBLIC_EVOLUTION_API_KEY!;
 export async function getGroups(instanceName: string): Promise<Group[]> {
   try {
     const response = await fetch(
-      `${EVOLUTION_API_URL}/group/fetchAllGroups/${instanceName}?getParticipants=true`,
+      `${EVOLUTION_API_URL}/group/fetchAllGroups/${instanceName}?getParticipants=false`,
       {
         headers: {
           apikey: EVOLUTION_API_KEY,
