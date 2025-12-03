@@ -7,6 +7,7 @@ import { Card } from "@/src/components/catd";
 import { Input } from "@/src/components/input";
 import { Button } from "@/src/components/button";
 import { checkUserAuthorized } from "@/src/lib/supabase";
+import { setCookie } from "cookies-next";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,13 +27,15 @@ export default function LoginPage() {
         throw new Error("Número não autorizado");
       }
 
+      setCookie("userPhone", user.phone_number);
+
       // Salva no localStorage
       localStorage.setItem("userPhone", user.phone_number);
       localStorage.setItem("userName", user.name);
       localStorage.setItem("evolutionInstance", user.evolution_key);
 
       // Redireciona para a página principal
-      router.push("/");
+      router.push("/mention");
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login");
     } finally {
@@ -57,9 +60,9 @@ export default function LoginPage() {
 
         <div className="space-y-6">
           <Input
-            label="Número de Telefone"
-            type="tel"
-            placeholder="11999999999"
+            label="Seu nome"
+            type="text"
+            placeholder="Digite seu nome"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             onKeyPress={handleKeyPress}
