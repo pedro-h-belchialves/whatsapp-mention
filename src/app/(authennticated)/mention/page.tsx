@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Send, Users, Check, Loader2 } from "lucide-react";
-import { Header } from "@/src/components/header";
+
 import { Card } from "@/src/components/catd";
 import { Button } from "@/src/components/button";
 import {
@@ -11,8 +11,8 @@ import {
   getGroupParticipants,
   sendMessageToGroup,
 } from "@/src/lib/evolution";
-import { Group } from "../types/group";
-import { Input } from "../components/input";
+import { Group } from "../../../types/group";
+import { Input } from "../../../components/input";
 
 export default function HomePage() {
   const router = useRouter();
@@ -86,6 +86,12 @@ export default function HomePage() {
     }
   };
 
+  const extractMeetId = (message: string): string | null => {
+    const regex = /https:\/\/meet\.google\.com\/([a-z0-9-]+)/i;
+    const match = message.match(regex);
+    return match ? match[1] : null;
+  };
+
   const handleSendMessage = async () => {
     if (!selectedGroup || !message.trim()) return;
 
@@ -96,10 +102,22 @@ export default function HomePage() {
       // Extrair JIDs dos participantes
       const mentionedJids = selectedGroup.participants.map((p) => p.id);
 
+      let messageToSennd = message;
+
+      if (message.includes("meet.google.com")) {
+        messageToSennd = message.replace(
+          /https:\/\/meet\.google\.com\/([a-z0-9-]+)/i,
+          process.env.NEXT_PUBLIC_HOST +
+            "/mentoria?id=" +
+            extractMeetId(message)
+        );
+        // message = `https://meet.google.com/${liveLink}`;
+      }
+
       await sendMessageToGroup(
         instanceName,
         selectedGroup.id,
-        message,
+        messageToSennd,
         mentionedJids
       );
 
@@ -135,9 +153,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-      <Header user={userName || ""} onLogout={handleLogout} />
-
+    <div className="min-h-screen ">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid md:grid-cols-3 gap-6">
           {/* Sidebar - Lista de Grupos */}
