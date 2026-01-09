@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Users, Check, Loader2 } from "lucide-react";
+import { Send, Users, Check, Loader2, Upload } from "lucide-react";
 
 import { Card } from "@/src/components/catd";
 import { Button } from "@/src/components/button";
@@ -26,6 +26,8 @@ export default function HomePage() {
   const [loadingGroups, setLoadingGroups] = useState(false);
   const [success, setSuccess] = useState(false);
   const [instanceName, setInstanceName] = useState("");
+  const [showFileInput, setShowFileInput] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     const phone = localStorage.getItem("userPhone");
@@ -114,12 +116,16 @@ export default function HomePage() {
         // message = `https://meet.google.com/${liveLink}`;
       }
 
-      await sendMessageToGroup(
+      const base64 = await fileToBase64(selectedFile!);
+      const pureBase64 = (base64 as string).split(",")[1];
+
+      await sendMessageToGroup({
         instanceName,
-        selectedGroup.id,
-        messageToSennd,
-        mentionedJids
-      );
+        groupId: selectedGroup.id,
+        message: messageToSennd,
+        mentionedJidList: mentionedJids,
+        image: pureBase64,
+      });
 
       setSuccess(true);
       setMessage("");
@@ -258,6 +264,54 @@ export default function HomePage() {
                   </p>
                 </div>
 
+                <div className="flex gap-2 items-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowFileInput(!showFileInput)}
+                    className={`w-10 h-5 rounded-full flex bg-gray-200 p-[1px]  text-gray-800 ${
+                      showFileInput
+                        ? "bg-green-500 text-white justify-end"
+                        : " justify-start"
+                    } `}
+                  >
+                    <div className="rounded-full w-[19px] h-[19px] bg-white flex" />
+                  </button>
+                  <span>Enviar Imagem</span>
+                </div>
+                {showFileInput && (
+                  <label
+                    className={`flex w-full items-center justify-center gap-2  border-dashed rounded-xl px-2 py-3  ${
+                      selectedFile
+                        ? "bg-green-50 border border-green-400  text-green-500"
+                        : " bg-gray-50 border border-gray-400 text-gray-500 "
+                    }`}
+                    htmlFor="fileInput"
+                  >
+                    <input
+                      className="hidden"
+                      id="fileInput"
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setSelectedFile(file);
+                        }
+                      }}
+                    />
+
+                    <span className="">
+                      {selectedFile ? (
+                        selectedFile.name
+                      ) : (
+                        <div className="flex gap-2">
+                          <Upload className="w-6 h-6 " />
+                          <span>Selecionar Imagem</span>
+                        </div>
+                      )}
+                    </span>
+                  </label>
+                )}
+
                 {success && (
                   <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-600" />
@@ -291,4 +345,15 @@ export default function HomePage() {
       </main>
     </div>
   );
+}
+
+function fileToBase64(file: any) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
 }

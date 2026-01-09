@@ -57,31 +57,64 @@ export async function getGroupParticipants(
   }
 }
 
-export async function sendMessageToGroup(
-  instanceName: string,
-  groupId: string,
-  message: string,
-  mentionedJidList: string[]
-): Promise<void> {
+export async function sendMessageToGroup({
+  instanceName,
+  groupId,
+  message,
+  mentionedJidList,
+  image,
+}: {
+  instanceName: string;
+  groupId: string;
+  message: string;
+  mentionedJidList: string[];
+  image?: string;
+}): Promise<void> {
   try {
-    const response = await fetch(
-      `${EVOLUTION_API_URL}/message/sendText/${instanceName}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: EVOLUTION_API_KEY,
-        },
-        body: JSON.stringify({
-          number: groupId,
-          text: message,
-          mentioned: mentionedJidList,
-        }),
-      }
-    );
+    if (image) {
+      const response = await fetch(
+        `${EVOLUTION_API_URL}/message/sendMedia/${instanceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: EVOLUTION_API_KEY,
+          },
+          body: JSON.stringify({
+            number: groupId,
 
-    if (!response.ok) {
-      throw new Error("Erro ao enviar mensagem");
+            mediatype: "image", // image, video or document
+            mimetype: "image/png",
+            caption: message,
+            media: image,
+            fileName: "Imagem.png",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar mensagem");
+      }
+    } else {
+      const response = await fetch(
+        `${EVOLUTION_API_URL}/message/sendText/${instanceName}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: EVOLUTION_API_KEY,
+          },
+          body: JSON.stringify({
+            number: groupId,
+            text: message,
+            mentioned: mentionedJidList,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar mensagem");
+      }
     }
   } catch (error) {
     console.error("Erro ao enviar mensagem:", error);
