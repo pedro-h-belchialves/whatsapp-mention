@@ -116,15 +116,12 @@ export default function HomePage() {
         // message = `https://meet.google.com/${liveLink}`;
       }
 
-      const base64 = await fileToBase64(selectedFile!);
-      const pureBase64 = (base64 as string).split(",")[1];
-
       await sendMessageToGroup({
         instanceName,
         groupId: selectedGroup.id,
         message: messageToSennd,
         mentionedJidList: mentionedJids,
-        image: pureBase64,
+        image: selectedFile,
       });
 
       setSuccess(true);
@@ -345,15 +342,4 @@ export default function HomePage() {
       </main>
     </div>
   );
-}
-
-function fileToBase64(file: any) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-  });
 }

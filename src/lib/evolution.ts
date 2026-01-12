@@ -1,3 +1,4 @@
+import { fileToBase64 } from "../app/functions/transform-base64";
 import { Group } from "../types/group";
 import { Participant } from "../types/partiicipant";
 
@@ -68,10 +69,13 @@ export async function sendMessageToGroup({
   groupId: string;
   message: string;
   mentionedJidList: string[];
-  image?: string;
+  image?: File | null;
 }): Promise<void> {
   try {
     if (image) {
+      const base64 = await fileToBase64(image);
+      const pureBase64 = (base64 as string).split(",")[1];
+
       const response = await fetch(
         `${EVOLUTION_API_URL}/message/sendMedia/${instanceName}`,
         {
@@ -84,15 +88,16 @@ export async function sendMessageToGroup({
             number: groupId,
 
             mediatype: "image", // image, video or document
-            mimetype: "image/png",
+            mimetype: image.type,
             caption: message,
-            media: image,
+            media: pureBase64,
             fileName: "Imagem.png",
           }),
         }
       );
 
       if (!response.ok) {
+        console.log(response);
         throw new Error("Erro ao enviar mensagem");
       }
     } else {
