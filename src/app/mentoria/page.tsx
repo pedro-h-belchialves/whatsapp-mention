@@ -136,7 +136,8 @@ const MentoriaAttendance = () => {
           </h1>
           <br />
           <span className="text-3xl md:text-4xl text-transparent bg-clip-text font-[bosca] font-black bg-gradient-to-r from-[#A48B58] to-[#EFD6A3] mb-8">
-            FÁBIO GARCIA
+            {/* FÁBIO GARCIA */}
+            THAÍS ELARA
           </span>
           <p className="text-zinc-400 uppercase">
             Registre sua presença para continuar
