@@ -13,7 +13,7 @@ export async function getGroups(instanceName: string): Promise<Group[]> {
         headers: {
           apikey: EVOLUTION_API_KEY,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -31,7 +31,7 @@ export async function getGroups(instanceName: string): Promise<Group[]> {
 
 export async function getGroupParticipants(
   instanceName: string,
-  groupId: string
+  groupId: string,
 ): Promise<Participant[]> {
   try {
     const response = await fetch(
@@ -42,7 +42,7 @@ export async function getGroupParticipants(
           "Content-Type": "application/json",
           apikey: EVOLUTION_API_KEY,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -76,6 +76,18 @@ export async function sendMessageToGroup({
       const base64 = await fileToBase64(image);
       const pureBase64 = (base64 as string).split(",")[1];
 
+      console.log(pureBase64);
+      console.log(
+        JSON.stringify({
+          number: groupId,
+
+          mediatype: "image", // image, video or document
+          mimetype: image.type,
+          caption: message,
+          media: pureBase64,
+          fileName: "Imagem.png",
+        }),
+      );
       const response = await fetch(
         `${EVOLUTION_API_URL}/message/sendMedia/${instanceName}`,
         {
@@ -93,7 +105,7 @@ export async function sendMessageToGroup({
             media: pureBase64,
             fileName: "Imagem.png",
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -114,7 +126,7 @@ export async function sendMessageToGroup({
             text: message,
             mentioned: mentionedJidList,
           }),
-        }
+        },
       );
 
       if (!response.ok) {

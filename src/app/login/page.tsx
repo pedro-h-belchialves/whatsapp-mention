@@ -21,7 +21,6 @@ export default function LoginPage() {
 
     try {
       const user = await checkUserAuthorized(phoneNumber);
-      console.log(user);
 
       if (!user) {
         throw new Error("Número não autorizado");
