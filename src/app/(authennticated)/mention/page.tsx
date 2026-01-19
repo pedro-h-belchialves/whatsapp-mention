@@ -111,7 +111,7 @@ export default function HomePage() {
           /https:\/\/meet\.google\.com\/([a-z0-9-]+)/i,
           process.env.NEXT_PUBLIC_HOST +
             "/mentoria?id=" +
-            extractMeetId(message)
+            extractMeetId(message),
         );
         // message = `https://meet.google.com/${liveLink}`;
       }
@@ -121,7 +121,7 @@ export default function HomePage() {
         groupId: selectedGroup.id,
         message: messageToSennd,
         mentionedJidList: mentionedJids,
-        image: selectedFile,
+        image: showFileInput ? selectedFile : null,
       });
 
       setSuccess(true);
@@ -198,7 +198,7 @@ export default function HomePage() {
               ) : (
                 groups
                   .filter((group) =>
-                    group.subject.toLowerCase().includes(search.toLowerCase())
+                    group.subject.toLowerCase().includes(search.toLowerCase()),
                   )
                   .map((group) => (
                     <button
